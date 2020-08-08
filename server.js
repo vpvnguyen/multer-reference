@@ -1,8 +1,17 @@
 const express = require("express");
 const app = express();
 const multer = require("multer");
+const { urlencoded } = require("body-parser");
 
 const PORT = 5000;
+
+// mongodb
+const { MongoClient } = require("mongodb");
+const mongoDbUrl = "mongodb://localhost:27017";
+
+// express middleware
+app.use(express.json());
+app.use(urlencoded({ extended: true }));
 
 // multer
 // set storage
@@ -11,7 +20,7 @@ const PORT = 5000;
 // files to disk, as shown below. Here, we set up a directory
 // where all our files will be saved, and we'll also give
 // the files a new identifier.
-const storage = multer.diskStorage({
+var storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads");
   },
@@ -20,10 +29,9 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage });
+var upload = multer({ storage: storage });
 
 app.get("/", (req, res) => {
-  console.log(__dirname);
   res.sendFile(`${__dirname}/index.html`);
 });
 
@@ -32,19 +40,16 @@ app.get("/", (req, res) => {
 // In the index.html file, we defined an action attribute
 // that performs a POST request. Now we need to create an
 // endpoint in the Express application. Open the server.js file
-app.post(
-  "/uploadFile",
-  (upload.single("myFile"),
-  (req, res, next) => {
-    const { file } = req;
-    if (!file) {
-      const error = new Error("Please upload a file");
-      error.httpStatusCode = 400;
-      return next(error);
-    }
-    res.send(file);
-  })
-);
+app.post("/uploadFile", upload.single("myFile"), (req, res, next) => {
+  const { file } = req;
+  console.log(file);
+  if (!file) {
+    const error = new Error("Please upload a file");
+    error.httpStatusCode = 400;
+    return next(error);
+  }
+  res.send(file);
+});
 
 // Uploading Multiple Files
 // Uploading multiple files with Multer is similar
@@ -60,4 +65,8 @@ app.post("/uploadMulti", upload.array("myFiles", 12), (req, res, next) => {
   res.send(files);
 });
 
-app.listen(PORT, () => console.log(PORT));
+MongoClient.connect(mongoDbUrl, { useUnifiedTopology: true }, (err, client) => {
+  if (err) return console.error(err);
+  db = client.db("test");
+  app.listen(PORT, () => console.log(`App running on ${PORT}`));
+});
