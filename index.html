@@ -14,22 +14,26 @@
   </head>
   <body>
     <div class="row m-5">
-      <!--  SINGLE FILE -->
-      <div>Single</div>
+      <!-- MULTIPLE FILES - validate in controller -->
+      <h1>Multiple - validate in controller</h1>
       <div class="col-md-12">
-        <form action="/uploadFile" enctype="multipart/form-data" method="POST">
-          <input type="file" name="myFile" />
-          <input type="submit" value="Upload a file" />
+        <form action="/uploadMulti" enctype="multipart/form-data" method="POST">
+          <input type="file" name="myFiles" multiple />
+          <input type="submit" value="Upload your files" />
         </form>
       </div>
     </div>
 
     <div class="row m-5">
-      <!-- MULTIPLE FILES -->
-      <div>Multiple</div>
+      <!-- MULTIPLE FILES - validate with upload middleware -->
+      <h1>Multiple - validate with upload middleware</h1>
       <div class="col-md-12">
-        <form action="/uploadMulti" enctype="multipart/form-data" method="POST">
-          Select images: <input type="file" name="myFiles" multiple />
+        <form
+          action="/uploadMultiWrapper"
+          enctype="multipart/form-data"
+          method="POST"
+        >
+          <input type="file" name="myFiles" multiple />
           <input type="submit" value="Upload your files" />
         </form>
       </div>
