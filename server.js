@@ -86,7 +86,7 @@ app.post("/uploadMulti", upload.array("myFiles", 12), (req, res, next) => {
 
 // multiple file upload; validate upload middleware
 app.post(
-  "/uploadMultiWrapper",
+  "/uploadMulti/validateUpload",
   upload.array("myFiles", 12),
   validateUpload,
   (req, res) => {
