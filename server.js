@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(urlencoded({ extended: true }));
 
 // set multer storage
-var storage = multer.diskStorage({
+const storage = multer.diskStorage({
   // define a storage location on disk for files
   destination: (req, file, cb) => {
     const dir = "./uploads";
@@ -24,20 +24,25 @@ var storage = multer.diskStorage({
   },
 });
 
-var upload = multer({
+const upload = multer({
   storage,
   fileFilter: (req, file, cb) => {
     // The function should call `cb` with a boolean
     // to indicate if the file should be accepted
-    const acceptedFiles = ["application/pdf"];
-    console.log("FILE FILTER FILE", file);
+    const acceptedFiles = ["application/pdf", "text/plain"];
+    console.log("FILE FILTER", file);
 
     // accept file
-    if (acceptedFiles.includes(file.mimetype)) return cb(null, true);
-    // reject file
+    if (acceptedFiles.includes(file.mimetype)) {
+      console.log("ACCEPT FILE");
+      return cb(null, true);
+    }
+
+    // reject file; will allow endpoint to execute
+    console.log("REJECT FILE");
     cb(null, false);
 
-    // // pass an error if something goes wrong:
+    // pass an error; will halt from executing endpoint
     // cb(new Error("I don't have a clue!"));
   },
 });
@@ -50,16 +55,17 @@ app.get("/", (req, res) => {
 app.post("/uploadFile", upload.single("myFile"), async (req, res, next) => {
   console.log("/uploadFile");
   const { file } = req;
-  console.log("DO SOMETHING ELSE");
 
+  // catch file
   // if (!file) {
   //   const error = new Error("Please upload a file");
   //   error.httpStatusCode = 400;
   //   return next(error);
   // }
-  console.log("JIRA CLIENT");
 
-  res.send({ createIssue: "success" });
+  console.log("DO SOMETHING ELSE");
+
+  res.send({ message: "success" });
 });
 
 // multiple file upload
