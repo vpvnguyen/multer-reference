@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const dir = "./uploads";
     if (!fs.existsSync(dir)) fs.mkdirSync(dir);
-    cb(null, "uploads");
+    cb(null, dir);
   },
   // give files a new identifier
   filename: (req, file, cb) => {
@@ -26,6 +26,10 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
+  limits: {
+    files: 6,
+    fileSize: 7340032, // 7 MB
+  },
   fileFilter: (req, file, cb) => {
     // The function should call `cb` with a boolean
     // to indicate if the file should be accepted
@@ -70,12 +74,17 @@ app.post("/uploadFile", upload.single("myFile"), async (req, res, next) => {
 
 // multiple file upload
 app.post("/uploadMulti", upload.array("myFiles", 12), (req, res, next) => {
+  console.log("/uploadMulti");
   const { files } = req;
-  if (!files) {
-    const error = new Error("Please choose files");
+  console.log(files.length);
+  const minimumFiles = 2;
+  if (files.length < minimumFiles) {
+    const error = new Error("There was an issue uploading files");
     error.httpStatusCode = 400;
     return next(error);
   }
+
+  console.log("DO SOMETHING ELSE");
 
   res.send(files);
 });
