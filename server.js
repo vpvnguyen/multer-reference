@@ -48,7 +48,6 @@ const upload = multer({
 });
 
 const validateUpload = (req, res, next) => {
-  console.log("validateUpload");
   const { files } = req;
   const minimumFiles = 2;
   if (files.length < minimumFiles) {
@@ -69,6 +68,7 @@ app.post("/uploadMulti", upload.array("myFiles", 12), (req, res, next) => {
   try {
     const { files } = req;
     const minimumFiles = 2;
+
     if (files.length < minimumFiles) {
       const error = new Error("Minimum file requirements not met");
       error.httpStatusCode = 400;
@@ -79,8 +79,8 @@ app.post("/uploadMulti", upload.array("myFiles", 12), (req, res, next) => {
 
     res.send(files);
   } catch (error) {
-    console.log("catch error");
-    console.log(error);
+    console.error(error.message);
+    res.send("Error");
   }
 });
 
@@ -90,9 +90,15 @@ app.post(
   upload.array("myFiles", 12),
   validateUpload,
   (req, res) => {
-    console.log("Run controller");
-    const { files } = req;
-    res.send(files);
+    try {
+      console.log("Run controller");
+
+      const { files } = req;
+      res.send(files);
+    } catch (error) {
+      console.error(error.message);
+      res.send("Error");
+    }
   }
 );
 
