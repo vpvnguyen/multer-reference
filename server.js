@@ -40,46 +40,60 @@ const upload = multer({
     }
 
     // reject file; will allow endpoint to execute
-    cb(null, false);
+    // cb(null, false);
 
     // pass an error; will halt from executing endpoint
-    // cb(new Error("I don't have a clue!"));
+    cb(new Error("Issue with file type or limit!"));
   },
 });
 
+const validateUpload = (req, res, next) => {
+  console.log("validateUpload");
+  const { files } = req;
+  const minimumFiles = 2;
+  if (files.length < minimumFiles) {
+    const error = new Error("Minimum file requirements not met");
+    error.httpStatusCode = 400;
+    next(error);
+  }
+  next();
+};
+
+// serve upload page
 app.get("/", (req, res) => {
   res.sendFile(`${__dirname}/index.html`);
 });
 
-// single file upload
-app.post("/uploadFile", upload.single("myFile"), async (req, res, next) => {
-  const { file } = req;
-
-  // catch file
-  // if (!file) {
-  //   const error = new Error("Please upload a file");
-  //   error.httpStatusCode = 400;
-  //   return next(error);
-  // }
-
-  console.log("DO SOMETHING ELSE");
-
-  res.send(file);
-});
-
 // multiple file upload
 app.post("/uploadMulti", upload.array("myFiles", 12), (req, res, next) => {
-  const { files } = req;
-  const minimumFiles = 2;
-  if (files.length < minimumFiles) {
-    const error = new Error("There was an issue uploading files");
-    error.httpStatusCode = 400;
-    return next(error);
+  try {
+    const { files } = req;
+    const minimumFiles = 2;
+    if (files.length < minimumFiles) {
+      const error = new Error("Minimum file requirements not met");
+      error.httpStatusCode = 400;
+      next(error);
+    }
+
+    console.log("Run controller");
+
+    res.send(files);
+  } catch (error) {
+    console.log("catch error");
+    console.log(error);
   }
-
-  console.log("DO SOMETHING ELSE");
-
-  res.send(files);
 });
+
+// multiple file upload; validate upload middleware
+app.post(
+  "/uploadMultiWrapper",
+  upload.array("myFiles", 12),
+  validateUpload,
+  (req, res) => {
+    console.log("Run controller");
+    const { files } = req;
+    res.send(files);
+  }
+);
 
 app.listen(PORT, () => console.log(`App running on ${PORT}`));
