@@ -24,7 +24,7 @@ var storage = multer.diskStorage({
     cb(null, "uploads");
   },
   filename: (req, file, cb) => {
-    cb(null, file.fieldname + "-" + Date.now());
+    cb(null, `${file.fieldname}-${Date.now()}`);
   },
 });
 
@@ -35,10 +35,9 @@ var upload = multer({
     // to indicate if the file should be accepted
     const acceptedFiles = ["application/pdf"];
     console.log("FILE FILTER FILE", file);
-    console.log(file);
 
     // accept file
-    if (acceptedFiles.includes(file.mimetype)) cb(null, true);
+    if (acceptedFiles.includes(file.mimetype)) return cb(null, true);
     // reject file
     cb(null, false);
 
@@ -57,14 +56,16 @@ app.get("/", (req, res) => {
 // that performs a POST request. Now we need to create an
 // endpoint in the Express application. Open the server.js file
 app.post("/uploadFile", upload.single("myFile"), async (req, res, next) => {
+  console.log("/uploadFile");
   const { file } = req;
   console.log("DO SOMETHING ELSE");
-  if (upload.single("myFile")) console.log(upload.single("myFile"));
+
   // if (!file) {
   //   const error = new Error("Please upload a file");
   //   error.httpStatusCode = 400;
   //   return next(error);
   // }
+  console.log("JIRA CLIENT");
 
   res.send({ createIssue: "success" });
 });
