@@ -2,7 +2,10 @@
 
 Simple upload server which handles uploading files using multer.
 
-# Notes
+## Application Setup
+
+- Express `server.js` serves a simple upload page for 2 different process in which uploads are handled
+- Upload validation occurs within the controller or by using a custom middleware
 
 ## MemoryStorage
 
