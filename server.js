@@ -34,16 +34,12 @@ const upload = multer({
     // The function should call `cb` with a boolean
     // to indicate if the file should be accepted
     const acceptedFiles = ["application/pdf", "text/plain"];
-    console.log("FILE FILTER", file);
-
     // accept file
     if (acceptedFiles.includes(file.mimetype)) {
-      console.log("ACCEPT FILE");
       return cb(null, true);
     }
 
     // reject file; will allow endpoint to execute
-    console.log("REJECT FILE");
     cb(null, false);
 
     // pass an error; will halt from executing endpoint
@@ -57,7 +53,6 @@ app.get("/", (req, res) => {
 
 // single file upload
 app.post("/uploadFile", upload.single("myFile"), async (req, res, next) => {
-  console.log("/uploadFile");
   const { file } = req;
 
   // catch file
@@ -69,14 +64,12 @@ app.post("/uploadFile", upload.single("myFile"), async (req, res, next) => {
 
   console.log("DO SOMETHING ELSE");
 
-  res.send({ message: "success" });
+  res.send(file);
 });
 
 // multiple file upload
 app.post("/uploadMulti", upload.array("myFiles", 12), (req, res, next) => {
-  console.log("/uploadMulti");
   const { files } = req;
-  console.log(files.length);
   const minimumFiles = 2;
   if (files.length < minimumFiles) {
     const error = new Error("There was an issue uploading files");
