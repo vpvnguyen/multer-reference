@@ -10,19 +10,15 @@ const PORT = 5000;
 app.use(express.json());
 app.use(urlencoded({ extended: true }));
 
-// multer
-// set storage
-// The next thing will be to define a storage location
-// for our files. Multer gives the option of storing
-// files to disk, as shown below. Here, we set up a directory
-// where all our files will be saved, and we'll also give
-// the files a new identifier.
+// set multer storage
 var storage = multer.diskStorage({
+  // define a storage location on disk for files
   destination: (req, file, cb) => {
     const dir = "./uploads";
     if (!fs.existsSync(dir)) fs.mkdirSync(dir);
     cb(null, "uploads");
   },
+  // give files a new identifier
   filename: (req, file, cb) => {
     cb(null, `${file.fieldname}-${Date.now()}`);
   },
@@ -50,11 +46,7 @@ app.get("/", (req, res) => {
   res.sendFile(`${__dirname}/index.html`);
 });
 
-// Handling File Uploads
-// Uploading a Single File
-// In the index.html file, we defined an action attribute
-// that performs a POST request. Now we need to create an
-// endpoint in the Express application. Open the server.js file
+// single file upload
 app.post("/uploadFile", upload.single("myFile"), async (req, res, next) => {
   console.log("/uploadFile");
   const { file } = req;
@@ -70,9 +62,7 @@ app.post("/uploadFile", upload.single("myFile"), async (req, res, next) => {
   res.send({ createIssue: "success" });
 });
 
-// Uploading Multiple Files
-// Uploading multiple files with Multer is similar
-// to a single file upload, but with a few changes.
+// multiple file upload
 app.post("/uploadMulti", upload.array("myFiles", 12), (req, res, next) => {
   const { files } = req;
   if (!files) {
